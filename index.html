@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Meter | Quirky Analytics</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- CSS: QUIRKY NEO-BRUTALISM THEME --- */
+        :root {
+            --bg-color: #f0f0f0;
+            --accent-yellow: #ffeb3b;
+            --accent-pink: #ff80ab;
+            --accent-cyan: #80deea;
+            --accent-purple: #ea80fc;
+            --border-black: 3px solid #000;
+            --shadow-hard: 6px 6px 0px #000;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            /* Quirky Background Pattern */
+            background-image: radial-gradient(#000 1px, transparent 1px);
+            background-size: 20px 20px;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: #fff;
+            border: var(--border-black);
+            box-shadow: var(--shadow-hard);
+            width: 100%;
+            max-width: 600px;
+            padding: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header */
+        header {
+            background: var(--accent-yellow);
+            border-bottom: var(--border-black);
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: -2px;
+            font-size: 2rem;
+        }
+
+        /* Search Area */
+        .search-box {
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            background: #fff;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: var(--border-black);
+            font-family: inherit;
+            font-weight: bold;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            background: var(--accent-cyan);
+        }
+
+        button.analyze-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 0 25px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        button.analyze-btn:hover {
+            background: #fff;
+            color: #000;
+            border: var(--border-black);
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            border-top: var(--border-black);
+            border-bottom: var(--border-black);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-right: var(--border-black);
+            background: #fff;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab-btn:last-child {
+            border-right: none;
+        }
+
+        .tab-btn:hover {
+            background: #eee;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-purple);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 20px;
+            min-height: 300px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .card {
+            border: var(--border-black);
+            padding: 15px;
+            background: #fff;
+            box-shadow: 4px 4px 0px #000;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #000;
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .card .value {
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+
+        /* Health Bar */
+        .health-container {
+            margin-top: 20px;
+            border: var(--border-black);
+            padding: 10px;
+            background: var(--accent-pink);
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #fff;
+            border: 2px solid #000;
+            width: 100%;
+            position: relative;
+        }
+
+        .fill {
+            height: 100%;
+            background: #000;
+            width: 0%;
+            transition: width 1s ease-in-out;
+        }
+
+        /* Loading State */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 50px;
+            font-size: 2rem;
+        }
+
+        .fa-spin {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1><i class="fa-solid fa-eye"></i> Social Meter</h1>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="usernameInput" placeholder="@username or page url...">
+            <button class="analyze-btn" onclick="analyzeProfile()">CHECK</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('instagram')"><i class="fa-brands fa-instagram"></i> Insta</button>
+            <button class="tab-btn" onclick="openTab('linkedin')"><i class="fa-brands fa-linkedin-in"></i> LinkedIn</button>
+            <button class="tab-btn" onclick="openTab('twitter')"><i class="fa-brands fa-twitter"></i> X / Twt</button>
+        </div>
+
+        <div class="content-area">
+            
+            <!-- Loading Spinner -->
+            <div id="loader" class="loader">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+
+            <!-- Instagram Data -->
+            <div id="instagram" class="tab-content active">
+                <div class="metrics-grid">
+                    <div class="card" style="background-color: var(--accent-cyan);">
+                        <h3>Total Likes</h3>
+                        <div class="value" id="insta-likes">--</div>
+                    </div>
+                    <div class="card" style="background-color: var(--accent-yellow);">
+                        <h3>Avg Comments</h3>
+                        <div class="value" id="insta-comments">--</div>
+                    </div>
+                    <div class="card" style="background-color: #fff;">
+                        <h3>Engagement</h3>
+                        <div class="value" id="insta-rate">--%</div>
+                    </div>
+                    <div class="card" style="background-color: #fff;">
+                        <h3>Followers</h3>
+                        <div class="value" id="insta-followers">--</div>
+                    </div>
+                </div>
+                <div class="health-container">
+                    <h3><i class="fa-solid fa-heart-pulse"></i> Page Health</h3>
+                    <div class="progress-bar">
+                        <div class="fill" id="insta-health"></div>
+                    </div>
+                    <p id="insta-health-text">Waiting for analysis...</p>
+                </div>
+            </div>
+
+            <!-- LinkedIn Data -->
+            <div id="linkedin" class="tab-content">
+                <div class="metrics-grid">
+                    <div class="card" style="background-color: var(--accent-pink);">
+                        <h3>Connections</h3>
+                        <div class="value" id="li-conn">--</div>
+                    </div>
+                    <div class="card" style="background-color: var(--accent-purple);">
+                        <h3>Post Impressions</h3>
+                        <div class="value" id="li-imp">--</div>
+                    </div>
+                </div>
+                <div class="health-container" style="background-color: var(--accent-cyan);">
+                    <h3><i class="fa-solid fa-briefcase"></i> Professional Score</h3>
+                    <div class="progress-bar">
+                        <div class="fill" id="li-health"></div>
+                    </div>
+                    <p id="li-health-text">Waiting for analysis...</p>
+                </div>
+            </div>
+
+            <!-- Twitter Data -->
+            <div id="twitter" class="tab-content">
+                 <div class="metrics-grid">
+                    <div class="card" style="background-color: var(--accent-yellow);">
+                        <h3>Retweets</h3>
+                        <div class="value" id="tw-rt">--</div>
+                    </div>
+                    <div class="card" style="background-color: var(--accent-pink);">
+                        <h3>Mentions</h3>
+                        <div class="value" id="tw-mentions">--</div>
+                    </div>
+                </div>
+                <div style="margin-top:20px; text-align:center; font-weight:bold;">
+                    Tweet Frequency: <span style="background: black; color: white; padding: 2px 5px;">High</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- JS: LOGIC ---
+
+        function openTab(platformName) {
+            // Hide all contents
+            const contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].classList.remove("active");
+            }
+            
+            // Remove active class from buttons
+            const buttons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+
+            // Show specific content & activate button
+            document.getElementById(platformName).classList.add("active");
+            
+            // Find the button that was clicked (mock logic to find button by index is skipped for simplicity)
+            // Instead we re-assign active class based on the onclick trigger or simple query
+            const clickedBtn = document.querySelector(`button[onclick="openTab('${platformName}')"]`);
+            clickedBtn.classList.add("active");
+        }
+
+        function analyzeProfile() {
+            const username = document.getElementById('usernameInput').value;
+            if(!username) {
+                alert("Please enter a username!");
+                return;
+            }
+
+            // Show Loader, Hide Content
+            document.getElementById('loader').style.display = 'block';
+            const contents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].style.opacity = "0.1"; // Dim content
+            }
+
+            // SIMULATE API CALL (Since we can't use real keys on frontend)
+            setTimeout(() => {
+                // Generate Random Mock Data
+                const likes = Math.floor(Math.random() * 50000) + 1000;
+                const comments = Math.floor(Math.random() * 500) + 10;
+                const rate = (Math.random() * 5 + 1).toFixed(2);
+                const health = Math.floor(Math.random() * 100);
+
+                // Update DOM elements for Instagram (as an example)
+                document.getElementById('insta-likes').innerText = formatNumber(likes);
+                document.getElementById('insta-comments').innerText = comments;
+                document.getElementById('insta-rate').innerText = rate + "%";
+                document.getElementById('insta-followers').innerText = formatNumber(likes * 12);
+                
+                // Animate Health Bar
+                document.getElementById('insta-health').style.width = health + "%";
+                document.getElementById('insta-health-text').innerText = health > 80 ? "Excellent Condition!" : "Needs Improvement.";
+
+                // Mock LinkedIn Data
+                document.getElementById('li-conn').innerText = "500+";
+                document.getElementById('li-imp').innerText = formatNumber(likes / 2);
+                document.getElementById('li-health').style.width = (health - 10) + "%";
+                document.getElementById('li-health-text').innerText = "All Star Profile";
+
+                // Mock Twitter Data
+                document.getElementById('tw-rt').innerText = Math.floor(Math.random() * 200);
+                document.getElementById('tw-mentions').innerText = Math.floor(Math.random() * 50);
+
+                // Hide Loader, Restore Content
+                document.getElementById('loader').style.display = 'none';
+                for (let i = 0; i < contents.length; i++) {
+                    contents[i].style.opacity = "1";
+                }
+
+            }, 2000); // 2 second delay to feel like "calculating"
+        }
+
+        // Helper to format numbers (e.g. 1200 -> 1.2k)
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+            return num;
+        }
+    </script>
+</body>
+</html>
