@@ -3,161 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Calculator | Neo-Brutalism</title>
-    <!-- FontAwesome -->
+    <title>Social Meter | Viral Edition</title>
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <style>
-        /* --- CSS: QUIRKY NEO-BRUTALISM THEME --- */
+        /* --- CSS: POP-ART NEO-BRUTALISM --- */
         :root {
-            --bg-color: #e0e0e0;
-            --accent-yellow: #ffeb3b;
-            --accent-pink: #ff80ab;
-            --accent-cyan: #80deea;
-            --accent-lime: #ccff90;
-            --border-black: 3px solid #000;
-            --shadow-hard: 5px 5px 0px #000;
+            --bg-color: #ff9a9e;
+            --card-bg: #fff;
+            --accent-yellow: #ffd700;
+            --accent-cyan: #00ffff;
+            --accent-lime: #c6ff00;
+            --accent-purple: #d500f9;
+            --border: 3px solid #000;
+            --shadow: 6px 6px 0px #000;
         }
 
         body {
             font-family: 'Courier New', Courier, monospace;
             background-color: var(--bg-color);
-            background-image: linear-gradient(45deg, #000000 1.5px, transparent 1.5px);
-            background-size: 30px 30px;
+            background-image: radial-gradient(#fff 2px, transparent 2px);
+            background-size: 40px 40px;
             margin: 0;
             padding: 20px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        .container {
-            background: #fff;
-            border: var(--border-black);
-            box-shadow: var(--shadow-hard);
-            width: 100%;
-            max-width: 550px;
-            border-radius: 0px; /* Brutalist = sharp corners usually */
-            overflow: hidden;
+            overflow: hidden; /* Keeps floating icons inside */
             position: relative;
         }
 
-        /* Header */
+        /* --- FLOATING BACKGROUND ANIMATION --- */
+        .floating-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Behind everything */
+            pointer-events: none; /* Let clicks pass through */
+            overflow: hidden;
+        }
+
+        .float-icon {
+            position: absolute;
+            color: #000;
+            opacity: 0.15;
+            font-size: 2rem;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- MAIN APP CONTAINER --- */
+        .app-container {
+            background: var(--card-bg);
+            border: var(--border);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 10;
+            border-radius: 12px;
+        }
+
         header {
-            background: var(--accent-cyan);
-            border-bottom: var(--border-black);
+            background: var(--accent-yellow);
+            border-bottom: var(--border);
             padding: 20px;
             text-align: center;
+            border-radius: 9px 9px 0 0;
         }
 
         h1 {
             margin: 0;
-            text-transform: uppercase;
             font-weight: 900;
+            text-transform: uppercase;
             font-size: 1.8rem;
+            letter-spacing: -2px;
             text-shadow: 2px 2px 0px #fff;
         }
 
-        /* Tabs Navigation */
+        /* TABS */
         .tabs {
             display: flex;
-            border-bottom: var(--border-black);
+            background: #fff;
+            border-bottom: var(--border);
         }
 
         .tab-btn {
             flex: 1;
             padding: 15px;
             border: none;
-            border-right: var(--border-black);
+            border-right: var(--border);
             background: #fff;
-            font-family: inherit;
-            font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.2rem;
             cursor: pointer;
             transition: 0.2s;
         }
-
         .tab-btn:last-child { border-right: none; }
-
+        
         .tab-btn:hover { background: #eee; }
-
+        
         .tab-btn.active {
             background: #000;
-            color: #fff;
+            color: var(--accent-yellow);
         }
 
-        /* Content */
+        /* INPUT AREA */
         .calculator-area {
             padding: 25px;
-            background: #fff;
         }
 
-        .input-group {
+        .row {
+            display: flex;
+            gap: 15px;
             margin-bottom: 15px;
         }
+        .col { flex: 1; }
 
         label {
-            display: block;
             font-weight: 900;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
+            display: block;
+            margin-bottom: 5px;
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            border: var(--border-black);
+            padding: 15px;
+            border: var(--border);
             font-family: inherit;
-            font-size: 1.1rem;
             font-weight: bold;
-            box-sizing: border-box; /* Fix padding width issue */
-            background: #f9f9f9;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background: #f4f4f4;
+            transition: 0.2s;
         }
 
         input:focus {
-            background: var(--accent-yellow);
+            background: var(--accent-cyan);
             outline: none;
-            box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+            box-shadow: 4px 4px 0px #000;
+            transform: translate(-2px, -2px);
         }
 
-        /* Calculate Button */
-        .action-btn {
+        /* BUTTON */
+        .analyze-btn {
             width: 100%;
-            padding: 15px;
-            margin-top: 10px;
-            background: var(--accent-pink);
-            border: var(--border-black);
-            font-family: inherit;
+            background: var(--accent-purple);
+            color: #fff;
             font-weight: 900;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
+            padding: 15px;
+            border: var(--border);
             cursor: pointer;
             box-shadow: 4px 4px 0px #000;
-            transition: transform 0.1s;
+            margin-top: 10px;
+            transition: 0.1s;
         }
 
-        .action-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px #000;
+        .analyze-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px #000;
         }
 
-        /* Result Section */
-        .result-box {
-            margin-top: 30px;
-            border: var(--border-black);
-            padding: 20px;
+        /* RESULTS */
+        .results-box {
+            display: none;
+            margin-top: 25px;
+            border: var(--border);
             background: var(--accent-lime);
+            padding: 20px;
             text-align: center;
-            display: none; /* Hidden by default */
-            animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .result-title { font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        .result-value { font-size: 3.5rem; font-weight: 900; margin: 10px 0; }
-        .result-comment { font-style: italic; font-weight: bold; background: #000; color: #fff; display: inline-block; padding: 5px 10px; transform: rotate(-2deg); }
+        .score-val {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .score-msg {
+            font-weight: bold;
+            background: #000;
+            color: #fff;
+            display: inline-block;
+            padding: 5px 15px;
+            margin-top: 10px;
+            transform: rotate(-2deg);
+        }
 
-        @keyframes popUp {
-            from { transform: scale(0.8); opacity: 0; }
+        @keyframes popIn {
+            from { transform: scale(0.5); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
 
@@ -165,149 +215,195 @@
 </head>
 <body>
 
-    <div class="container">
+    <!-- BACKGROUND ANIMATION LAYER -->
+    <div class="floating-container" id="bg-container">
+        <!-- Icons injected via JS -->
+    </div>
+
+    <!-- MAIN APP -->
+    <div class="app-container">
         <header>
-            <h1><i class="fa-solid fa-calculator"></i> Engagement Calc</h1>
+            <h1><i class="fa-solid fa-bolt"></i> Social Meter</h1>
         </header>
 
-        <!-- Tabs to switch Platform Logic -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="setPlatform('instagram')">
-                <i class="fa-brands fa-instagram"></i> Insta
-            </button>
-            <button class="tab-btn" onclick="setPlatform('linkedin')">
-                <i class="fa-brands fa-linkedin"></i> LinkedIn
-            </button>
-            <button class="tab-btn" onclick="setPlatform('twitter')">
-                <i class="fa-brands fa-twitter"></i> X / Twt
-            </button>
+            <button class="tab-btn active" onclick="setPlatform('instagram')"><i class="fa-brands fa-instagram"></i></button>
+            <button class="tab-btn" onclick="setPlatform('linkedin')"><i class="fa-brands fa-linkedin-in"></i></button>
+            <button class="tab-btn" onclick="setPlatform('tiktok')"><i class="fa-brands fa-tiktok"></i></button>
+            <button class="tab-btn" onclick="setPlatform('youtube')"><i class="fa-brands fa-youtube"></i></button>
         </div>
 
         <div class="calculator-area">
             
-            <div class="input-group">
-                <label><i class="fa-regular fa-heart"></i> Total Likes</label>
-                <input type="number" id="likes" placeholder="0">
+            <div class="row">
+                <div class="col">
+                    <label><i class="fa-solid fa-heart"></i> Likes</label>
+                    <input type="number" id="likes" placeholder="0">
+                </div>
+                <div class="col">
+                    <label><i class="fa-solid fa-comment"></i> Comments</label>
+                    <input type="number" id="comments" placeholder="0">
+                </div>
             </div>
 
-            <div class="input-group">
-                <label><i class="fa-regular fa-comment"></i> Total Comments</label>
-                <input type="number" id="comments" placeholder="0">
+            <div class="row">
+                <div class="col">
+                    <label id="share-label"><i class="fa-solid fa-share"></i> Shares</label>
+                    <input type="number" id="shares" placeholder="0">
+                </div>
+                <div class="col">
+                    <label id="view-label"><i class="fa-solid fa-eye"></i> Views</label>
+                    <input type="number" id="views" placeholder="0">
+                </div>
             </div>
 
-            <div class="input-group" id="shares-group">
-                <label><i class="fa-regular fa-paper-plane"></i> Shares / Saves</label>
-                <input type="number" id="shares" placeholder="0">
+            <div class="col" style="margin-bottom: 15px;">
+                <label><i class="fa-solid fa-users"></i> Followers</label>
+                <input type="number" id="followers" placeholder="Total Followers">
             </div>
 
-            <div class="input-group">
-                <!-- Label changes based on platform (Reach vs Followers vs Impressions) -->
-                <label id="base-label"><i class="fa-solid fa-users"></i> Followers / Reach</label>
-                <input type="number" id="base-metric" placeholder="Total Reach or Followers">
-            </div>
+            <button class="analyze-btn" onclick="calculate()">CHECK STATS</button>
 
-            <button class="action-btn" onclick="calculateER()">CALCULATE RATE</button>
-
-            <!-- Result Display -->
-            <div id="result" class="result-box">
-                <div class="result-title">Engagement Rate</div>
-                <div class="result-value" id="er-score">0.00%</div>
-                <div class="result-comment" id="er-comment">Waiting for data...</div>
+            <!-- RESULT CARD -->
+            <div id="result" class="results-box">
+                <div style="font-size: 0.9rem; font-weight: bold; text-transform: uppercase;">Engagement Rate</div>
+                <div class="score-val" id="final-score">0.0%</div>
+                <div class="score-msg" id="final-msg">Not Bad</div>
             </div>
 
         </div>
     </div>
 
     <script>
-        let currentPlatform = 'instagram';
+        // --- 1. FLOATING BACKGROUND LOGIC ---
+        function createFloatingIcons() {
+            const container = document.getElementById('bg-container');
+            const icons = [
+                'fa-instagram', 'fa-linkedin-in', 'fa-tiktok', 'fa-youtube', 
+                'fa-heart', 'fa-thumbs-up', 'fa-bolt', 'fa-star', 'fa-comment'
+            ];
 
-        function setPlatform(platform) {
-            currentPlatform = platform;
-
-            // Update UI Tabs
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            // Find button by icon since we removed onclick identification for simplicity, 
-            // or just use index. Let's use simple logic:
-            if(platform === 'instagram') document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            if(platform === 'linkedin') document.querySelectorAll('.tab-btn')[1].classList.add('active');
-            if(platform === 'twitter') document.querySelectorAll('.tab-btn')[2].classList.add('active');
-
-            // Reset Inputs
-            document.getElementById('result').style.display = 'none';
-            document.getElementById('likes').value = '';
-            document.getElementById('comments').value = '';
-            document.getElementById('shares').value = '';
-            document.getElementById('base-metric').value = '';
-
-            // Update Labels/Fields based on Platform Logic
-            const baseLabel = document.getElementById('base-label');
-            const sharesGroup = document.getElementById('shares-group');
-
-            if (platform === 'instagram') {
-                baseLabel.innerHTML = '<i class="fa-solid fa-users"></i> Followers (or Reach)';
-                sharesGroup.style.display = 'block';
-                document.querySelector('#shares-group label').innerHTML = '<i class="fa-regular fa-bookmark"></i> Saves';
-            } else if (platform === 'linkedin') {
-                baseLabel.innerHTML = '<i class="fa-solid fa-eye"></i> Impressions';
-                sharesGroup.style.display = 'block';
-                document.querySelector('#shares-group label').innerHTML = '<i class="fa-solid fa-share"></i> Reposts';
-            } else if (platform === 'twitter') {
-                baseLabel.innerHTML = '<i class="fa-solid fa-eye"></i> Impressions';
-                sharesGroup.style.display = 'block';
-                document.querySelector('#shares-group label').innerHTML = '<i class="fa-solid fa-retweet"></i> Retweets';
+            // Create 20 random floating icons
+            for(let i=0; i<20; i++) {
+                const el = document.createElement('i');
+                const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+                
+                el.classList.add('fa-brands', 'fa-solid', randomIcon, 'float-icon');
+                
+                // Random positioning and timing
+                el.style.left = Math.random() * 100 + '%';
+                el.style.animationDuration = (Math.random() * 10 + 10) + 's'; // 10s to 20s
+                el.style.fontSize = (Math.random() * 2 + 1) + 'rem'; // Random size
+                el.style.animationDelay = Math.random() * 5 + 's';
+                
+                container.appendChild(el);
             }
         }
+        // Run on load
+        createFloatingIcons();
 
-        function calculateER() {
-            // Get Values (default to 0 if empty)
+
+        // --- 2. CALCULATOR LOGIC ---
+        function setPlatform(platform) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            // Highlight button (simple logic for demo)
+            const map = { 'instagram':0, 'linkedin':1, 'tiktok':2, 'youtube':3 };
+            document.querySelectorAll('.tab-btn')[map[platform]].classList.add('active');
+
+            // Update Labels
+            const sLabel = document.getElementById('share-label');
+            const vLabel = document.getElementById('view-label');
+
+            if(platform === 'instagram') {
+                sLabel.innerHTML = '<i class="fa-solid fa-bookmark"></i> Saves';
+                vLabel.innerHTML = '<i class="fa-solid fa-eye"></i> Reach';
+            } else if (platform === 'linkedin') {
+                sLabel.innerHTML = '<i class="fa-solid fa-retweet"></i> Reposts';
+                vLabel.innerHTML = '<i class="fa-solid fa-chart-simple"></i> Impressions';
+            } else {
+                sLabel.innerHTML = '<i class="fa-solid fa-share"></i> Shares';
+                vLabel.innerHTML = '<i class="fa-solid fa-eye"></i> Views';
+            }
+
+            // Hide result on switch
+            document.getElementById('result').style.display = 'none';
+        }
+
+        function calculate() {
             const likes = parseFloat(document.getElementById('likes').value) || 0;
             const comments = parseFloat(document.getElementById('comments').value) || 0;
             const shares = parseFloat(document.getElementById('shares').value) || 0;
-            const base = parseFloat(document.getElementById('base-metric').value) || 0;
+            const views = parseFloat(document.getElementById('views').value) || 0;
+            const followers = parseFloat(document.getElementById('followers').value) || 0;
 
-            if (base === 0) {
-                alert("Base metric (Followers/Reach/Impressions) cannot be zero!");
+            const interactions = likes + comments + shares;
+            
+            // Logic: Use Views if available, otherwise Followers
+            let base = views > 0 ? views : followers;
+            
+            if(base === 0) {
+                alert("Please enter Views or Followers to calculate!");
                 return;
             }
 
-            // Calculation Logic
-            // Formula: ((Likes + Comments + Shares) / Base) * 100
-            let totalInteractions = likes + comments + shares;
-            
-            // Adjust weight if needed (e.g., LinkedIn values comments higher), 
-            // but standard ER treats all interactions equally.
-            
-            let rate = (totalInteractions / base) * 100;
-            
-            // formatting
-            let finalRate = rate.toFixed(2);
-
-            // Health Comment Logic
-            let comment = "";
-            let color = "#ccff90"; // default lime
-
-            if (rate < 1) {
-                comment = "💀 Ghost Town (Low)";
-                color = "#cfd8dc"; // Grey
-            } else if (rate >= 1 && rate < 3.5) {
-                comment = "👍 Healthy / Average";
-                color = "#fff59d"; // Light Yellow
-            } else if (rate >= 3.5 && rate < 6) {
-                comment = "🔥 High Performance!";
-                color = "#ffcc80"; // Orange
-            } else {
-                comment = "🚀 VIRAL MATERIAL!";
-                color = "#ff80ab"; // Pink
-            }
+            let rate = (interactions / base) * 100;
+            let displayRate = rate.toFixed(2);
 
             // Update UI
-            const resultBox = document.getElementById('result');
-            resultBox.style.display = 'block';
-            resultBox.style.backgroundColor = color;
+            const resBox = document.getElementById('result');
+            const scoreText = document.getElementById('final-score');
+            const msgText = document.getElementById('final-msg');
+
+            resBox.style.display = 'block';
+            scoreText.innerText = displayRate + "%";
+
+            // --- 3. CONFETTI TRIGGER ---
+            // You requested "35% above". 
+            // Note: In social media, 5% is usually "High". 35% is viral insanity.
+            // I'm setting the threshold to 3.5% for "Good" and 10% for "Crazy" so you can test it easily.
+            // To change to exactly 35%, change the number '3.5' below to '35'.
             
-            document.getElementById('er-score').innerText = finalRate + "%";
-            document.getElementById('er-comment').innerText = comment;
+            const CONFETTI_THRESHOLD = 3.5; 
+
+            if(rate > CONFETTI_THRESHOLD) {
+                msgText.innerText = "🚀 VIRAL MATERIAL!";
+                msgText.style.background = "#d500f9"; // Purple
+                resBox.style.background = "#c6ff00"; // Lime
+                triggerConfetti();
+            } else if (rate > 1.5) {
+                msgText.innerText = "🔥 Doing Great!";
+                msgText.style.background = "#000"; 
+                resBox.style.background = "#fff";
+            } else {
+                msgText.innerText = "💤 Needs Optimization";
+                msgText.style.background = "#555";
+                resBox.style.background = "#e0e0e0";
+            }
         }
+
+        // --- 4. CONFETTI ANIMATION ---
+        function triggerConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+            var random = function(min, max) { return Math.random() * (max - min) + min; }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                // since particles fall down, start a bit higher than random
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
     </script>
 </body>
 </html>
